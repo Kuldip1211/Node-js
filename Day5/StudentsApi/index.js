@@ -1,7 +1,9 @@
 const express = require("express");
 const app = express();
 const db = require("./config/db-config");
-const { createStudentTable, insertStudents, getAllstudents,getOneStudents } = require("./schema/student-schema");
+const { createStudentTable, insertStudents, getAllstudents,getOneStudents
+      , updateSingleStudent , deleteStiudents
+      } = require("./schema/student-schema");
 const { Connection } = require("mysql2");
 
 // for access body we will use 
@@ -54,6 +56,50 @@ app.post("/post-students", (req, res) => {
     });
 })
 
+/**
+ * @TODO Update a single students
+ */
+app.put("/update-student",(req,res)=>{
+    const { name , email , age, course } = req.body 
+    const id = req.query.id;
+
+    updateSingleStudent(id,name,email,age,course,(err,result)=>{
+        if(err){
+            return res.json({
+                success : false,
+                message : err.sqlMessage
+            })
+        }else{
+            res.json({
+                success  : true,
+                message : "Student Updated Successfuly"
+            })
+        }
+    })
+})
+
+/**
+ * @TODO delete the students 
+ */
+app.delete("/delete-student",(req,res)=>{
+    const id = req.query.id;
+    if(!id){
+        res.json({
+            success : false,
+            message : "Id is not provided"
+        })
+    }
+    deleteStiudents(id , (err , result)=>{
+        if(err) return res.json({
+            success : false,
+            message : err
+        })
+        return res.json({
+            success : true,
+            message : result.sqlMessage
+        })
+    })
+})
 
 app.listen(3002, () => {
     console.log("server is listing at port " + 3002);

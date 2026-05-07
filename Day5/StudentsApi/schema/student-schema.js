@@ -1,7 +1,7 @@
 const db = require("../config/db-config");
 
-const callback = (err,result) => {
-    if(err === null) return result;
+const callback = (err, result) => {
+    if (err === null) return result;
     return err;
 }
 
@@ -31,27 +31,27 @@ const createStudentTable = () => {
 /**
  * @TODO insert student 
  */
-const insertStudents = (name,email,age,course , callback) => {
+const insertStudents = (name, email, age, course, callback) => {
     const Q = "INSERT INTO students ( name , email , age , course ) VALUES ( ? , ? , ? , ?);"
 
-    db.query(Q, [name, email, age, course],(err,result)=>{
-        if(err){
-          callback(err,null)
-        }else{
-         callback(null,result);
+    db.query(Q, [name, email, age, course], (err, result) => {
+        if (err) {
+            callback(err, null)
+        } else {
+            callback(null, result);
         }
     })
 }
 /**
  * @TODO get all student 
  */
-const getAllstudents = (callback) =>{
+const getAllstudents = (callback) => {
     const Q = "SELECT * FROM students";
-    
-    db.query(Q,(err,result)=>{
-        if(err){
-          console.log("Error in fetch all data " + err);
-          callback(err,null)
+
+    db.query(Q, (err, result) => {
+        if (err) {
+            console.log("Error in fetch all data " + err);
+            callback(err, null)
         }
         callback(null, result);
     })
@@ -59,12 +59,12 @@ const getAllstudents = (callback) =>{
 /**
  * @TODO get one student by id
  */
-const getOneStudents = (id , callback) => {
+const getOneStudents = (id, callback) => {
     const Q = "SELECT * FROM students Where id = ?";
 
-    db.query(Q,id , (err,result)=>{
-        if(err) return callback(err,null);
-        return callback(null,result)
+    db.query(Q, id, (err, result) => {
+        if (err) return callback(err, null);
+        return callback(null, result)
     })
 }
 
@@ -75,9 +75,43 @@ const getOneStudents = (id , callback) => {
 /**
  * @TODO update stident
  */
+const updateSingleStudent = (id, name, email, age, course, callback) => {
+
+    const Q = `UPDATE students
+               SET name = ?, email = ?, age = ?, course = ?
+               WHERE id = ?`;
+
+    db.query(Q, [name, email, age, course, id], (err, result) => {
+
+        if (err) {
+            callback(err, null);
+        } else {
+            console.log(Q);
+            console.log(result);
+
+            callback(null, result);
+        }
+    });
+};
+
+const deleteStiudents = (id , callback) =>{
+    const Q = `DELETE FROM students where id = ?`
+
+    try {
+        db.query(Q,id,(err,result)=>{
+             if(err)  return callback(err,null)
+                return callback(null , result)
+        })
+    } catch (error) {
+        callback(error , null)
+    }
+} 
+
 module.exports = {
     createStudentTable,
     insertStudents,
     getAllstudents,
-    getOneStudents
+    getOneStudents,
+    updateSingleStudent,
+    deleteStiudents
 };
